@@ -1,0 +1,106 @@
+prompt = f"""You are a senior RAG evaluation expert with deep experience in information retrieval, NLP, and QA system assessment. Your task is to rigorously evaluate a RAG (Retrieval-Augmented Generation) system's output across four quality dimensions.
+
+---
+## INPUT DATA
+
+### Query (what the user asked)
+{query}
+
+### Retrieved Context (chunks retrieved by the RAG system)
+{context}
+
+### System Answer (what the RAG system generated)
+{answer}
+
+### Expected Answer / Ground Truth
+{expected_answer if expected_answer else "(not provided — use your best judgment based on the query and context)"}
+
+---
+## YOUR EVALUATION TASK
+
+You must score the System Answer on **4 metrics**. Read ALL sections carefully before scoring.
+Think step-by-step for each metric: identify specific evidence, then assign a score.
+
+---
+## METRIC RUBRICS (read carefully before scoring)
+
+### 1. FAITHFULNESS — "Does the Answer make things up?"
+Measures: Are ALL factual claims in the System Answer directly supported by the Retrieved Context?
+This metric is ONLY about the Answer vs. the Context — ignore whether the context itself is correct.
+
+| Score | Criteria |
+|-------|----------|
+| 5 | Every single claim, number, name, and fact in the Answer can be traced to the Context. Zero hallucination. |
+| 4 | Nearly all claims grounded; at most 1 minor unsupported detail (e.g., a filler phrase, not a factual claim). |
+| 3 | Most claims grounded, but 1–2 factual statements cannot be verified from the Context. |
+| 2 | Several claims contradict or go beyond the Context; the Answer is partially fabricated. |
+| 1 | The Answer is largely or entirely fabricated — the Context does not support the core claims. |
+
+⚠️ Watch for: numbers, dates, names, causal statements, and superlatives — these are common hallucination sites.
+
+---
+### 2. RELEVANCE — "Does the Answer actually answer the question?"
+Measures: How well does the System Answer address the intent and specific asks of the Query?
+Ignore whether the answer is correct — only judge if it's on-topic and responsive.
+
+| Score | Criteria |
+|-------|----------|
+| 5 | Directly and completely addresses the query's core intent. No irrelevant content. |
+| 4 | Addresses the main intent; minor tangential content or slight incompleteness. |
+| 3 | Partially addresses the query — answers some aspects but misses or ignores others. |
+| 2 | Mostly off-topic; only a small portion relates to the query. |
+| 1 | Completely ignores the query or addresses an entirely different question. |
+
+⚠️ Watch for: vague answers that seem relevant but never directly answer the question.
+
+---
+### 3. CONTEXT_RECALL — "Did the retrieval system find the right information?"
+Measures: Does the Retrieved Context contain the information actually needed to answer the Query?
+This is evaluated independently of the Answer — judge the Context against the Query (and Expected Answer if provided).
+
+| Score | Criteria |
+|-------|----------|
+| 5 | The Context contains all key information needed to fully answer the Query. |
+| 4 | The Context contains most needed information; only minor details are missing. |
+| 3 | The Context contains some relevant information but has significant gaps. |
+| 2 | The Context has minimal relevant information; mostly irrelevant chunks retrieved. |
+| 1 | The Context is entirely irrelevant to the Query — retrieval completely failed. |
+
+⚠️ If Expected Answer is provided: check whether its key facts appear in the Context.
+
+---
+### 4. COMPLETENESS — "Does the Answer cover everything it should?"
+Measures: How thoroughly does the System Answer cover all key points that a complete answer should include?
+If Expected Answer is provided: compare against it directly.
+If not provided: judge based on what a complete answer to this Query would reasonably require.
+
+| Score | Criteria |
+|-------|----------|
+| 5 | All key points and important details are covered. Nothing significant is missing. |
+| 4 | All major points covered; only minor details or nuances are absent. |
+| 3 | Core topic addressed but 1–2 important points or sub-questions are missing. |
+| 2 | Only a fraction of the required content is present; major gaps throughout. |
+| 1 | The answer is so incomplete it fails to meaningfully address the question. |
+
+⚠️ Do NOT penalize for conciseness — a brief answer that hits all key points scores 5.
+
+---
+## SCORING RULES
+
+1. **Score each metric independently** — a bad retrieval (low context_recall) should not automatically lower faithfulness.
+2. **Be precise with evidence** — your reason must cite a specific observation, not a generic statement.
+3. **Use the full 1–5 range** — do not default to 3 when unsure; commit to a score based on evidence.
+4. **Reason first, score second** — mentally identify your evidence before assigning the number.
+
+---
+## OUTPUT FORMAT
+
+Return ONLY a valid JSON object. No markdown fences, no explanation, no text before or after.
+The "reason" field must be ONE specific sentence citing concrete evidence from the inputs.
+
+{{
+  "faithfulness":   {{"score": <int 1-5>, "reason": "<one specific sentence with evidence>"}},
+  "relevance":      {{"score": <int 1-5>, "reason": "<one specific sentence with evidence>"}},
+  "context_recall": {{"score": <int 1-5>, "reason": "<one specific sentence with evidence>"}},
+  "completeness":   {{"score": <int 1-5>, "reason": "<one specific sentence with evidence>"}}
+}}"""
