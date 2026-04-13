@@ -67,4 +67,4 @@ Bài học: khi Generation trả về câu trả lời đúng nhưng thiếu, kh
 
 ---
 
-*Lưu file: `reports/individual/[ten_ban].md`*
+
