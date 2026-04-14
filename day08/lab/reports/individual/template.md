@@ -1,7 +1,7 @@
 # Báo Cáo Cá Nhân — Lab Day 08: RAG Pipeline
 
 **Họ và tên:** Phan Hoài Linh 
-**Vai trò trong nhóm:** Full-stack (đảm nhận toàn bộ pipeline một mình)
+**Vai trò trong nhóm:**Tech Lead / Retrieval Owner / Eval Owner / Documentation Owner  
 **Ngày nộp:** 13/4/2026
 **Độ dài:** ~650 từ
 
